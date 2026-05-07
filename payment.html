@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment | ShowGo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f2027;
+            color: white;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: rgba(255,255,255,0.08);
+            padding: 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .summary {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+
+        .summary p {
+            margin: 8px 0;
+        }
+
+        .methods {
+            margin-top: 20px;
+        }
+
+        .method {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .method:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .selected {
+            border: 2px solid #ff416c;
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 25px;
+            border: none;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .success {
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>💳 Payment</h2>
+
+    <!-- Booking Summary -->
+    <div class="summary" id="summary"></div>
+
+    <!-- Payment Methods -->
+    <div class="methods">
+        <div class="method" onclick="selectMethod(this, 'UPI')">📱 UPI</div>
+        <div class="method" onclick="selectMethod(this, 'Paytm')">💰 Paytm</div>
+        <div class="method" onclick="selectMethod(this, 'Card')">💳 Credit/Debit Card</div>
+    </div>
+
+    <button class="btn" onclick="payNow()">Pay Now</button>
+
+    <div class="success" id="successMsg">
+        <h3>🎉 Payment Successful!</h3>
+        <p>Redirecting to ticket...</p>
+    </div>
+</div>
+
+<script>
+// Load booking data
+const booking = JSON.parse(localStorage.getItem("booking"));
+
+if(!booking){
+    alert("No booking found!");
+    window.location.href = "events.html";
+}
+
+// Show summary
+document.getElementById("summary").innerHTML = `
+    <p><strong>Event:</strong> ${booking.event}</p>
+    <p><strong>Seats:</strong> ${booking.seats.join(", ")}</p>
+    <p><strong>Total:</strong> ₹${booking.total}</p>
+`;
+
+// Payment selection
+let selectedMethod = "";
+
+function selectMethod(element, method){
+    document.querySelectorAll(".method").forEach(m => m.classList.remove("selected"));
+    element.classList.add("selected");
+    selectedMethod = method;
+}
+
+// Payment
+function payNow(){
+    if(!selectedMethod){
+        alert("Select a payment method");
+        return;
+    }
+
+    document.getElementById("successMsg").style.display = "block";
+
+    setTimeout(() => {
+        localStorage.setItem("paymentMethod", selectedMethod);
+        window.location.href = "success.html";
+    }, 2000);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel | ShowGo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: 'Segoe UI';
+            background: #0f2027;
+            color: white;
+            padding: 20px;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            text-decoration: none;
+            color: white;
+        }
+
+        .nav-links a {
+            margin-left: 20px;
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Form */
+        input {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 8px;
+            border: none;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 8px;
+            border: none;
+            background: #ff416c;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Drag box */
+        .drop-box {
+            border: 2px dashed #aaa;
+            padding: 15px;
+            text-align: center;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .drop-box.dragover {
+            border-color: #ff416c;
+        }
+
+        /* Preview */
+        #preview {
+            width: 200px;
+            height: 120px;
+            object-fit: cover;
+            margin-top: 10px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        /* Cards (SMALL SIZE) */
+        #list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.08);
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .card h4 {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+
+        .card p {
+            font-size: 12px;
+            color: #ccc;
+        }
+
+        .card button {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <h1><a href="index.html" class="logo">ShowGo</a></h1>
+    <div class="nav-links">
+        <a href="events.html">View Events</a>
+    </div>
+</div>
+
+<h2>Admin Panel</h2>
+
+<input id="title" placeholder="Event Name">
+<input id="date" placeholder="Date">
+<input id="location" placeholder="Location">
+
+<!-- Drag + Upload -->
+<div class="drop-box" id="dropBox">
+    Drag & Drop Image OR Click to Upload
+    <input type="file" id="fileInput" hidden>
+</div>
+
+<img id="preview">
+
+<button onclick="addEvent()">Save Event</button>
+
+<h3>All Events</h3>
+<div id="list"></div>
+
+<script>
+// Auth
+if(localStorage.getItem("admin")!=="true"){
+    window.location.href="admin-login.html";
+}
+
+let events = JSON.parse(localStorage.getItem("events")) || [];
+let imageData = "";
+
+// Elements
+const dropBox = document.getElementById("dropBox");
+const fileInput = document.getElementById("fileInput");
+const preview = document.getElementById("preview");
+
+// Upload click
+dropBox.onclick = () => fileInput.click();
+fileInput.onchange = e => handleFile(e.target.files[0]);
+
+// Drag
+dropBox.ondragover = e => {
+    e.preventDefault();
+    dropBox.classList.add("dragover");
+};
+
+dropBox.ondragleave = () => {
+    dropBox.classList.remove("dragover");
+};
+
+dropBox.ondrop = e => {
+    e.preventDefault();
+    dropBox.classList.remove("dragover");
+    handleFile(e.dataTransfer.files[0]);
+};
+
+// File handler
+function handleFile(file){
+    if(!file.type.startsWith("image/")){
+        alert("Only images allowed");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e){
+        imageData = e.target.result;
+        preview.src = imageData;
+        preview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+}
+
+// Render
+function render(){
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    events.forEach((e,i)=>{
+        list.innerHTML += `
+        <div class="card">
+            <img src="${e.img}">
+            <h4>${e.title}</h4>
+            <p>${e.date}</p>
+            <p>${e.location}</p>
+
+            <button onclick="edit(${i})">Edit</button>
+            <button onclick="removeEvent(${i})">Delete</button>
+        </div>`;
+    });
+}
+
+// Add
+function addEvent(){
+    const title = document.getElementById("title").value;
+    const date = document.getElementById("date").value;
+    const location = document.getElementById("location").value;
+
+    if(!title || !date || !location || !imageData){
+        alert("Fill all fields");
+        return;
+    }
+
+    events.push({title, date, location, img: imageData});
+    localStorage.setItem("events", JSON.stringify(events));
+
+    clearForm();
+    render();
+}
+
+// Edit
+function edit(i){
+    const e = events[i];
+
+    document.getElementById("title").value = e.title;
+    document.getElementById("date").value = e.date;
+    document.getElementById("location").value = e.location;
+
+    preview.src = e.img;
+    preview.style.display = "block";
+    imageData = e.img;
+
+    events.splice(i,1);
+}
+
+// Delete
+function removeEvent(i){
+    events.splice(i,1);
+    localStorage.setItem("events", JSON.stringify(events));
+    render();
+}
+
+// Clear
+function clearForm(){
+    document.getElementById("title").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("location").value = "";
+    preview.style.display = "none";
+    imageData = "";
+}
+
+render();
+</script>
+
+</body>
+</html>

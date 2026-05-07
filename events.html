@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Events | ShowGo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+        }
+
+        .logo {
+            text-decoration: none;
+            color: white;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 40px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links a {
+            margin-left: 20px;
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Section */
+        .events {
+            padding: 40px;
+            text-align: center;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .filters input,
+        .filters select {
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+        }
+
+        .filters button {
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: none;
+            background: #ff416c;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Grid */
+        .event-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* Card */
+        .event-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(15px);
+            transition: 0.3s;
+        }
+
+        .event-card:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Image */
+        .event-img {
+            position: relative;
+            height: 180px;
+        }
+
+        .event-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .event-card:hover .overlay {
+            opacity: 1;
+        }
+
+        .view-btn {
+            padding: 10px 20px;
+            background: #ff416c;
+            border-radius: 20px;
+            text-decoration: none;
+            color: white;
+        }
+
+        /* Content */
+        .event-content {
+            padding: 15px;
+        }
+
+        .empty {
+            margin-top: 50px;
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <h1><a href="index.html" class="logo">ShowGo</a></h1>
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="login.html">Login</a>
+        <a href="contact.html">Contact</a>
+    </div>
+</div>
+
+<!-- Events -->
+<section class="events">
+    <h2>✨ Upcoming Events</h2>
+
+    <!-- Filters -->
+    <div class="filters">
+        <input type="text" id="search" placeholder="Search events...">
+
+        <select id="locationFilter">
+            <option value="">All Locations</option>
+        </select>
+
+       
+
+        <button onclick="applyFilters()">Filter</button>
+        <button onclick="resetFilters()">Reset</button>
+    </div>
+
+    <!-- Events -->
+    <div class="event-container" id="eventContainer"></div>
+
+    <div id="emptyMsg" class="empty"></div>
+</section>
+
+<script>
+const container = document.getElementById("eventContainer");
+const emptyMsg = document.getElementById("emptyMsg");
+
+let events = JSON.parse(localStorage.getItem("events")) || [];
+
+// Default events (only if admin didn't add any)
+if(events.length === 0){
+    events = [
+        {title:"Music Concert", date:"2026-05-20", location:"Pune", img:"https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2"},
+        {title:"Tech Fest", date:"2026-06-05", location:"Mumbai", img:"https://images.unsplash.com/photo-1518770660439-4636190af475"},
+        {title:"Stand-up Comedy", date:"2026-06-15", location:"Bangalore", img:"https://images.unsplash.com/photo-1521336575822-6da63fb45455"}
+    ];
+}
+
+// Populate location dropdown
+const locationFilter = document.getElementById("locationFilter");
+const locations = [...new Set(events.map(e => e.location))];
+
+locations.forEach(loc => {
+    const option = document.createElement("option");
+    option.value = loc;
+    option.textContent = loc;
+    locationFilter.appendChild(option);
+});
+
+// Render events
+function render(data){
+    container.innerHTML = "";
+
+    if(data.length === 0){
+        emptyMsg.innerText = "No matching events found.";
+        return;
+    }
+
+    emptyMsg.innerText = "";
+
+    data.forEach(e => {
+        container.innerHTML += `
+        <div class="event-card">
+            <div class="event-img">
+                <img src="${e.img}">
+                <div class="overlay">
+                    <a href="details.html?event=${encodeURIComponent(e.title)}&date=${encodeURIComponent(e.date)}&location=${encodeURIComponent(e.location)}&img=${encodeURIComponent(e.img)}" class="view-btn">
+                        View Details
+                    </a>
+                </div>
+            </div>
+
+            <div class="event-content">
+                <h3>${e.title}</h3>
+                <p>📅 ${e.date}</p>
+                <p>📍 ${e.location}</p>
+            </div>
+        </div>
+        `;
+    });
+}
+
+// Apply filters
+function applyFilters(){
+    const search = document.getElementById("search").value.toLowerCase();
+    const location = document.getElementById("locationFilter").value;
+    const date = document.getElementById("dateFilter").value;
+
+    let filtered = events.filter(e => {
+        const matchName = e.title.toLowerCase().includes(search);
+        const matchLocation = location ? e.location === location : true;
+        const matchDate = date ? e.date === date : true;
+
+        return matchName && matchLocation && matchDate;
+    });
+
+    render(filtered);
+}
+
+// Reset filters
+function resetFilters(){
+    document.getElementById("search").value = "";
+    document.getElementById("locationFilter").value = "";
+    document.getElementById("dateFilter").value = "";
+
+    render(events);
+}
+
+// Initial render
+render(events);
+</script>
+
+</body>
+</html>

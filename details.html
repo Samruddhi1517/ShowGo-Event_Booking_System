@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Details | ShowGo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+        }
+
+        /* HERO */
+        .hero {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.4);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            bottom: 30px;
+            left: 40px;
+        }
+
+        .hero-overlay h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .meta {
+            font-size: 16px;
+            color: #ddd;
+        }
+
+        /* TAGS */
+        .tags {
+            margin-top: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #ff416c;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+
+        /* MAIN SECTION */
+        .container {
+            padding: 40px;
+            display: flex;
+            gap: 40px;
+        }
+
+        .left {
+            flex: 2;
+        }
+
+        .right {
+            flex: 1;
+            background: rgba(255,255,255,0.08);
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            height: fit-content;
+        }
+
+        /* BUTTON */
+        .btn {
+            display: block;
+            margin-top: 20px;
+            padding: 14px;
+            text-align: center;
+            border-radius: 30px;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HERO -->
+<div class="hero">
+    <img id="eventImg">
+    <div class="hero-overlay">
+        <h1 id="eventTitle"></h1>
+        <div class="meta" id="eventMeta"></div>
+
+        <div class="tags">
+            <span class="tag">Live</span>
+            <span class="tag">Entertainment</span>
+            <span class="tag">Trending</span>
+        </div>
+    </div>
+</div>
+
+<!-- DETAILS -->
+<section class="container">
+
+    <!-- LEFT -->
+    <div class="left">
+        <h2>About the Event</h2>
+        <p>
+            Get ready for an unforgettable experience filled with energy, excitement, and amazing performances.
+            This event promises great vibes, live entertainment, and a memorable time with friends and family.
+        </p>
+
+        <h2>Highlights</h2>
+        <ul>
+            <li>🎤 Live Performances</li>
+            <li>🎶 High-quality Sound & Lights</li>
+            <li>🍔 Food & Refreshments</li>
+            <li>📸 Photo Booth & Activities</li>
+        </ul>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+        <h3>Book Your Tickets</h3>
+        <p>Choose your seats and enjoy the show.</p>
+
+        <a id="bookBtn" class="btn" href="#">Select Seats</a>
+    </div>
+
+</section>
+
+<script>
+try {
+    const params = new URLSearchParams(window.location.search);
+
+    const event = params.get("event") || "Music Concert";
+    const date = params.get("date") || "20 May 2026";
+    const location = params.get("location") || "Pune";
+    const img = params.get("img") || "https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2";
+
+    // Fill UI
+    document.getElementById("eventTitle").innerText = event;
+    document.getElementById("eventMeta").innerText = `${date} • ${location}`;
+    document.getElementById("eventImg").src = img;
+
+    // Booking link
+    const bookingURL =
+        "booking.html?event=" + encodeURIComponent(event) +
+        "&date=" + encodeURIComponent(date) +
+        "&location=" + encodeURIComponent(location);
+
+    document.getElementById("bookBtn").href = bookingURL;
+
+} catch (e) {
+    console.error("Error:", e);
+}
+</script>
+
+</body>
+</html>

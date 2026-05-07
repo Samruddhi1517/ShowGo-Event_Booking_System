@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ShowGo | Event Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .nav-links a {
+            margin-left: 25px;
+            text-decoration: none;
+            color: white;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: "";
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            background: #ff416c;
+            left: 0;
+            bottom: -4px;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* HERO */
+        .hero {
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            animation: fadeIn 1.5s ease;
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #ddd;
+        }
+
+        /* BUTTON */
+        .btn {
+            padding: 14px 30px;
+            border-radius: 30px;
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: 0.3s;
+            box-shadow: 0 5px 20px rgba(255, 65, 108, 0.4);
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(255, 65, 108, 0.7);
+        }
+
+        /* FLOATING BACKGROUND SHAPES */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        .circle1 {
+            width: 200px;
+            height: 200px;
+            background: #ff416c;
+            top: 10%;
+            left: 10%;
+        }
+
+        .circle2 {
+            width: 150px;
+            height: 150px;
+            background: #00c6ff;
+            bottom: 10%;
+            right: 10%;
+        }
+
+        .circle3 {
+            width: 100px;
+            height: 100px;
+            background: #ffd700;
+            top: 50%;
+            left: 80%;
+        }
+
+        @keyframes float {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Background Effects -->
+<div class="circle circle1"></div>
+<div class="circle circle2"></div>
+<div class="circle circle3"></div>
+
+<!-- Navbar -->
+<div class="navbar">
+    <h1>ShowGo</h1>
+    <div class="nav-links">
+        <a href="admin-login.html">Admin</a>
+        <a href="login.html">Login</a>
+        <a href="contact.html">Contact</a>
+    </div>
+</div>
+
+<!-- Hero Section -->
+<section class="hero">
+    <h2>Experience Events Like Never Before 🎉</h2>
+    <p>Discover concerts, tech fests, comedy shows & more — all in one place.</p>
+    <a href="events.html" class="btn">Explore Events</a>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>© 2026 ShowGo. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>

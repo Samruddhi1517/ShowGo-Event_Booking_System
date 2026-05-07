@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seat Booking | ShowGo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f2027;
+            color: white;
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 20px;
+        }
+
+        .screen {
+            background: #ccc;
+            color: black;
+            width: 80%;
+            margin: 20px auto;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        /* GRID */
+        .seats {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        /* SEAT STYLE */
+        .seat {
+            width: 50px;
+            height: 50px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid white;
+            transition: 0.2s;
+        }
+
+        .seat:hover {
+            transform: scale(1.1);
+        }
+
+        /* TYPES */
+        .vip { background: gold; color: black; }
+        .gold { background: orange; color: black; }
+        .silver { background: #777; color: white; }
+
+        .selected {
+            background: #ff416c !important;
+            color: white;
+        }
+
+        .booked {
+            background: #444 !important;
+            cursor: not-allowed;
+        }
+
+        .info {
+            margin-top: 20px;
+        }
+
+        .btn {
+            margin-top: 20px;
+            padding: 12px 25px;
+            border-radius: 25px;
+            background: #ff416c;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .legend {
+            margin-top: 20px;
+        }
+
+        .legend span {
+            margin: 10px;
+            display: inline-block;
+        }
+
+        .box {
+            width: 15px;
+            height: 15px;
+            display: inline-block;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2 id="eventTitle"></h2>
+<p id="eventMeta"></p>
+
+<div class="screen">SCREEN</div>
+
+<div class="legend">
+    <span><div class="box" style="background:gold;"></div> VIP ₹500</span>
+    <span><div class="box" style="background:orange;"></div> Gold ₹300</span>
+    <span><div class="box" style="background:#777;"></div> Silver ₹150</span>
+</div>
+
+<div class="seats" id="seatContainer"></div>
+
+<div class="info">
+    <p>Seats: <span id="seatList">None</span></p>
+    <p>Total: ₹<span id="total">0</span></p>
+</div>
+
+<button class="btn" onclick="proceed()">Proceed to Payment</button>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const container = document.getElementById("seatContainer");
+
+    if (!container) {
+        document.body.innerHTML += "<h3 style='color:red'>Seat container not found!</h3>";
+        return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+
+    const event = params.get("event") || "Music Concert";
+    const date = params.get("date") || "20 May 2026";
+    const location = params.get("location") || "Pune";
+
+    document.getElementById("eventTitle").innerText = event;
+    document.getElementById("eventMeta").innerText = `${date} | ${location}`;
+
+    const prices = { vip: 500, gold: 300, silver: 150 };
+
+    const rows = ["A","B","C","D","E","F"];
+    const cols = 8;
+    const booked = ["A2","B4","C6"];
+
+    rows.forEach((row,i)=>{
+        for(let j=1;j<=cols;j++){
+            const seatNum = row + j;
+
+            const seat = document.createElement("div");
+            seat.classList.add("seat");
+
+            let type = i < 2 ? "vip" : i < 4 ? "gold" : "silver";
+            seat.classList.add(type);
+
+            seat.innerText = seatNum;
+            seat.dataset.type = type;
+
+            if(booked.includes(seatNum)){
+                seat.classList.add("booked");
+            }
+
+            seat.onclick = ()=>{
+                if(seat.classList.contains("booked")) return;
+                seat.classList.toggle("selected");
+                update();
+            };
+
+            container.appendChild(seat);
+        }
+    });
+
+    console.log("Seats created:", container.children.length);
+
+    function update(){
+        const selected = document.querySelectorAll(".seat.selected");
+
+        let total = 0;
+        let seats = [];
+
+        selected.forEach(s=>{
+            total += prices[s.dataset.type];
+            seats.push(s.innerText);
+        });
+
+        document.getElementById("seatList").innerText =
+            seats.length ? seats.join(", ") : "None";
+
+        document.getElementById("total").innerText = total;
+    }
+
+    window.proceed = function(){
+        const selected = document.querySelectorAll(".seat.selected");
+
+        if(selected.length === 0){
+            alert("Select at least one seat");
+            return;
+        }
+
+        let seats = [];
+        let total = 0;
+
+        selected.forEach(s=>{
+            seats.push(s.innerText);
+            total += prices[s.dataset.type];
+        });
+
+        localStorage.setItem("booking", JSON.stringify({
+            event, date, location, seats, total
+        }));
+
+        window.location.href = "payment.html";
+    };
+
+});
+</script>
+
+</body>
+</html>
