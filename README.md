@@ -142,7 +142,7 @@ Password: 1234
 # 🌐 Live Demo
 
 ```text
-https://your-live-link.com
+[https://your-live-link.com](https://samruddhi1517.github.io/ShowGo-Event_Booking_System)
 ```
 
 ---
