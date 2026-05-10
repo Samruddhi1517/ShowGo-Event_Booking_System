@@ -38,7 +38,7 @@ It also includes an Admin Panel to add, update, and remove events dynamically.
 * HTML5
 * CSS3
 * JavaScript
-* LocalStorage
+
 
 ---
 
